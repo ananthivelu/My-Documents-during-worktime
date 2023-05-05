@@ -1,0 +1,189 @@
+
+//Step 1
+use('HCI');
+db.dealer.find({ dealerCode: "HYUMA067"});
+db.dealer.find({ dealerCode: "HYUMA067"},
+                {_id: 0, dealerCode:1, dealerCountry:1, dealerState:1, dealerName:1,  
+                "productClassGroupCode.product_class_group_code":1,
+                "productClassGroupCode.product_class_group_effective_date_start":1,
+                "productClassGroupCode.product_class_group_effective_date_end":1,
+                "products.productCode":1,
+                "products.productType":1});
+
+//step 2  
+use('HCI');
+db.dealer.aggregate([
+	{
+		$match: {
+			dealerCode: 'HYUMA067'	
+		}
+	},
+	{
+		$unwind: '$products'
+	},
+	{
+		$match: {
+			'products.productCode': 'HYGP'
+		}
+	}
+]);
+
+use('HCI');
+db.dealer.aggregate([
+{$match: {dealerCode: 'HYUMA067'}},
+{$unwind: '$products'},
+{$match: {'products.productCode': 'HYGP'}}]);
+
+//Step 2.1
+use('HCI');
+db.productRate.find({"programAgentCode": '001900',
+"productCode": 'GEVS', "dealerTier": 'FL148GV2',
+"coverageCode": "GVPLAT",
+ "termMonthsMin": 12});
+use('HCI');
+db.productRate.find({"programAgentCode": '001900',
+"productCode": 'HYGP', "dealerTier": 'HYGPE'});
+
+use('HCI');
+db.productRate.find({"programAgentCode": '001900',
+"productCode": 'HYVO', "dealerTier": 'FL148HO1'});
+
+
+use('HCI');
+db.productRate.find({"programAgentCode": '001950',
+"productCode": 'GEVS', "dealerTier": 'GEVSC-NC'});
+
+//Step 3
+
+use("VIN");
+db.vinDetail.find({"vinPattern": '55SWF8EBKU'});
+
+
+use("VIN");
+db.vinDetail.find({"make": "MERCEDES-BENZ",
+    "model": "C-CLASS"}); --2027
+
+use("VIN");
+db.vinDetail.find({"make": "MERZ",
+    "model": "C300 4"});
+	
+KM8SMUHF8HU224002
+use("VIN");
+db.vinDetail.find({"vinPattern": 'KM8SMUHFHU'});
+
+//Step 4
+use("VIN");
+db.VASUR.find({"vin_pattern": "3GCUKSECJG"}, {_id:0, cpo_class1:1, vsc_class1:1});
+
+//Step 5
+
+//Step 5.1
+use('HCI');
+db.productClass.aggregate([
+  {
+    $unwind: "$classing"
+  },
+  {
+    $unwind: "$classing.productCodeClassing"
+  },
+  {
+    $match :{
+          modelId:1668
+      }
+  },
+  {
+   $match :{
+          'classing.productCode' : "HYPM",
+          'classing.programAgentCode': "001900"
+      }   
+  } ,
+  {
+   $match :{
+          'classing.productCodeClassing.productClassTypeName' : /^PC_/, //like 'PC_%'
+          'classing.productCodeClassing.externalClass': "85543"
+      }   
+  }      
+]).toArray();
+
+use('HCI');
+db.productClass.aggregate([{"$unwind": "$classing"}, {"$unwind": "$classing.productCodeClassing"},
+                                {"$match": {"modelId": 1668}},
+                                {"$match": {'classing.productCode': "PPVS",
+                                            'classing.programAgentCode': "001900"
+                                            }},
+                                {"$match": {'classing.productCodeClassing.productClassTypeName':
+                                                {"$regex": 'PC_*'},
+                                            'classing.productCodeClassing.externalClass': "85543"}
+                                }
+                                ]).toArray();
+
+//Step 5.2
+use('HCI');
+db.productClass.aggregate([
+  {
+    $unwind: "$classing"
+  },
+  {
+    $unwind: "$classing.productCodeClassing"
+  },
+  {
+    $match :{
+          modelId:1447
+      }
+  },
+  {
+   $match :{
+          'classing.productCode' : "HYAP",
+          'classing.programAgentCode': "001900"
+      }   
+  } ,
+  {
+   $match :{
+          'classing.productCodeClassing.productClassTypeName' : { $nin: [/^PC_/] } //not like 'PC_%'
+      }   
+  }      
+]).toArray();
+
+//Step 6 
+use('HCI');
+db.productRatePremium.find({"programAgentCode": '001900', productCode:'PPVS',class:"1G-GEIS"});
+//Add odometer range
+//PPUPNATL //PPNDNATL
+//Step 7
+use('HCI');
+db.productRate.find({programAgentCode: "001900", productCode:'HYGP', 
+                      dealerTier: "HYGP",
+                      coverageCode: "GAP150"});
+
+                      use('HCI');
+db.productRate.find({programAgentCode: "002000", productCode:'PKCP', 
+                      dealerTier: "HYBW"});
+
+use('HCI');
+db.productRate.find({"programAgentCode": '002000',
+"productCode": 'PPUP', "dealerTier": 'PPUPCPDS', "class":"HP", coverageCode: "PXDK","termMonthsMax": 12});
+
+// Class C – RR rates this as C
+
+use('HCI');
+
+db.productClass.find({modelId:2027},{_id: 0, make:1,cmsModel:1, model:1, modelId:1, makeId:1, classing: {$elemMatch: {productCode:"PPUP"}}});
+
+ 
+use('HCI');
+db.productRate.find({"programAgentCode": '002000',
+"productCode": 'PPUP', "dealerTier": 'PPUPNATL'});
+
+// Class B 0 – 4  – CMS rates this as B
+
+use('HCI');
+
+db.productClass.find({modelId:1275},{_id: 0, make:1,cmsModel:1, model:1, modelId:1, makeId:1, classing: {$elemMatch: {productCode:"GESW"}}});
+
+use('HCI');
+db.productRate.find({"programAgentCode": '001900',
+"productCode": 'HYUP', "dealerTier": 'HYND FL', "class": "2"});
+
+use('HCI');
+db.productRate.find({"programAgentCode": '001900',
+"productCode": 'PPTC', "dealerTier": 'PPTC WA'});
